@@ -59,3 +59,7 @@ function all($table,...$arg){
     
     }
     
+    function del($id){
+        global $pdo;
+        return $pdo->exec("DELETE FROM `upload` WHERE `id`='$id'");
+    }

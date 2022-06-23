@@ -77,6 +77,7 @@ if(isset($_FILES['file']) && $_FILES['file']['error']==0){
         <th>thumb</th>
         <th>type</th>
         <th>collections</th>
+        <th>操作</th>
     </tr>
     <?php
     $sql="SELECT * FROM upload";
@@ -104,6 +105,10 @@ if(isset($_FILES['file']) && $_FILES['file']['error']==0){
         <td><?=$file['name'];?></td>
         <td><?=$file['type'];?></td>
         <td><?=$file['collections'];?></td>
+        <td>
+            <button onclick="location.href='update_file.php?id=<?=$file['id'];?>'">更換檔案</button>
+            <button onclick="location.href='del_file.php?id=<?=$file['id'];?>'">刪除</button>
+        </td>
     </tr>
     <?php
     }
