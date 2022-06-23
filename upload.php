@@ -8,7 +8,8 @@
 include_once "base.php";
 
 //dd($_FILES);
-if($_FILES['img']['error']==0){
+
+if(isset($_FILES['img']) && $_FILES['img']['error']==0){
     echo $_FILES['img']['name'].'<br>';
     echo $_FILES['img']['type'].'<br>';
     move_uploaded_file($_FILES['img']['tmp_name'],"./upload/".$_FILES['img']['name']);
