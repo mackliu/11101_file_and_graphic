@@ -32,7 +32,7 @@ if(isset($_FILES['file']) && $_FILES['file']['error']==0){
             save('temperature',$data);
         }
     }
-    
+    fclose($file);
 
     //$sql="insert into `upload` (`name`,`type`,`collections`) values('{$name}','{$type}','{$_POST['collections']}')";
     //$pdo->exec($sql);
@@ -85,8 +85,91 @@ if(isset($_FILES['file']) && $_FILES['file']['error']==0){
 
 
 <!----讀出匯入完成的資料----->
+<div style="width:50%;margin:1rem auto;">
+<form action="?" method="get">
+    選擇年份:<select name="year" >
+        <?php
+            $years=$pdo->query("SELECT `year` FROM `temperature` GROUP BY `year`")->fetchAll(PDO::FETCH_ASSOC);
 
+            foreach($years as $year){
+                echo "<option value='{$year['year']}'>{$year['year']}</option>";
+            }
+        ?>
+    </select>
+    <input type="submit" value="送出">
+</form>
+</div>
+<table id="list">
+    <tr>
+        <th>年</th>
+        <th>月</th>
+        <th>平均氣溫[0C]</th>
+        <th>平均相對溼度[%]</th>
+        <th>日照時數[小時]</th>
+        <th>降水量[毫米]</th>
+        <th>降水日數[日]</th>
+        <th>操作</th>
+    </tr>
+    <?php
+    if(isset($_GET['year'])){
+        $sql="SELECT * FROM temperature where `year`='{$_GET['year']}'";
+    }else{
+        $sql="SELECT * FROM temperature";
+    }
+    $rows=$pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $counts=count($rows);
+    if(isset($_GET['year'])){
+        $file=fopen('paper.csv','w');
+        fwrite($file,"\xEF\xBB\xBF");
+        $tempe=0;
+        $humidity=0;
+        $daylight=0;
+        $preci=0;
+        $preci_days=0;
+        fwrite($file,'"年份","月份","平均氣溫[0C]","平均相對溼度[%]","日照時數[小時]","降水量[毫米]","降水日數[日]"'."\r\n");
+        foreach($rows as $row){
+            unset($row['id']);
+            $tempe+=$row['tempe'];
+            $humidity+=$row['humidity'];
+            $daylight+=$row['daylight'];
+            $preci+=$row['preci'];
+            $preci_days+=$row['preci_days'];
+            fwrite($file,join(',',$row)."\r\n");
+        }
+            $tempe=round($tempe/$counts,2);
+            $humidity=round($humidity/$counts,2);
+            $daylight=round($daylight/$counts,2);
+            $preci=round($preci/$counts,2);
+            $preci_days=round($preci_days/$counts,2);
+            fwrite($file,"\"\",\"平均:\",$tempe,$humidity,$daylight,$preci,$preci_days"."\r\n");
+        fclose($file);
+    }
+    //$files=all('upload');
+    foreach($rows as $row){
+    ?>
+    <tr>
+        <td><?=$row['year'];?></td>
+        <td><?=$row['month'];?></td>
+        <td><?=$row['tempe'];?></td>
+        <td><?=$row['humidity'];?></td>
+        <td><?=$row['daylight'];?></td>
+        <td><?=$row['preci'];?></td>
+        <td><?=$row['preci_days'];?></td>
+        <td>
+            <button onclick="location.href='update_row.php?id=<?=$row['id'];?>'">編輯</button>
+            <button onclick="location.href='del_row.php?id=<?=$row['id'];?>'">刪除</button>
+        </td>
+    </tr>
+    <?php
+    }
 
+    ?>
+</table>
+<div style="width:500px;margin:1rem auto;text-align:right">
+<?php if(isset($_GET['year'])){  ?>
+    <a href="paper.csv" download>下載</a>
+<?php } ?>
+</div>
 
 </body>
 </html>
