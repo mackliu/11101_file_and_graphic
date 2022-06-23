@@ -11,14 +11,18 @@
 include_once "base.php";
 
 if(isset($_FILES['file']) && $_FILES['file']['error']==0){
-    echo $_FILES['file']['tmp_name'];
+   // echo $_FILES['file']['tmp_name'];
     $file=fopen($_FILES['file']['tmp_name'],'r');
     fgets($file);
     while(!feof($file)){
         $str=fgets($file);
         $col=explode(",",$str);
         if(count($col)==6){
-            $data=['duration'=>$col[0],
+            $year=str_replace(["年",'"'],"",explode(" ",$col[0])[0]);
+            $month=str_replace(["月",'"'],"",explode(" ",$col[0])[1]);
+
+            $data=['year'=>$year,
+                   'month'=>$month,
                    'tempe'=>$col[1],
                    'humidity'=>$col[2],
                    'daylight'=>$col[3],
