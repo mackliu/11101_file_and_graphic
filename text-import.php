@@ -17,8 +17,16 @@ if(isset($_FILES['file']) && $_FILES['file']['error']==0){
     while(!feof($file)){
         $str=fgets($file);
         $col=explode(",",$str);
-        dd($col);
-        exit();
+        if(count($col)==6){
+            $data=['duration'=>$col[0],
+                   'tempe'=>$col[1],
+                   'humidity'=>$col[2],
+                   'daylight'=>$col[3],
+                   'preci'=>$col[4],
+                   'preci_days'=>$col[5],
+                  ];
+            save('temperature',$data);
+        }
     }
     
 
