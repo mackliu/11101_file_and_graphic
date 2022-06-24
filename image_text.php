@@ -102,6 +102,14 @@ if(isset($_POST)){
     $blue=imagecolorallocate($dst_img,0,0,255);
     $red=imagecolorallocate($dst_img,255,0,0);
     $green=imagecolorallocate($dst_img,0,255,0);
+    $colors=[imagecolorallocate($dst_img,0,0,255),
+             imagecolorallocate($dst_img,0,255,0),
+             imagecolorallocate($dst_img,255,0,0),
+             imagecolorallocate($dst_img,20,100,255),
+             imagecolorallocate($dst_img,200,100,155),
+             imagecolorallocate($dst_img,100,250,55),
+             imagecolorallocate($dst_img,156,20,90),
+            ];
     imagefill($dst_img,0,0,$white);
 
     imagettftext($dst_img,$_POST['size'],0,($border+$dst_x),($border+$dst_y),$$color,realpath('./font/arial.ttf'),$gstr);
@@ -112,7 +120,7 @@ if(isset($_POST)){
         $left_y=rand(5,$base_h-5);
         $right_x=rand($base_w-$border+5,$base_w-5);
         $right_y=rand(5,$base_h-5);
-        imageline($dst_img,$left_x,$left_y,$right_x,$right_y,$red);
+        imageline($dst_img,$left_x,$left_y,$right_x,$right_y,$colors[rand(0,6)]);
     }
 
     imagejpeg($dst_img,"./upload/text.jpg",100);
