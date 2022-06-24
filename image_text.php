@@ -84,15 +84,17 @@ if(isset($_POST)){
     $dst_h=0;
     for($i=0;$i<mb_strlen($gstr);$i++){
         $char=mb_substr($gstr,$i,1);
-        $tmp=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$char);
+        $text_info[$char]['angle']=rand(-15,15);
+        $tmp=imagettfbbox($_POST['size'],$text_info[$char]['angle'],realpath('./font/arial.ttf'),$char);
         $text_info[$char]['width']=max($tmp[0],$tmp[2],$tmp[4],$tmp[6])-min($tmp[0],$tmp[2],$tmp[4],$tmp[6]);
         $text_info[$char]['height']=max($tmp[1],$tmp[3],$tmp[5],$tmp[7])-min($tmp[1],$tmp[3],$tmp[5],$tmp[7]);
         $dst_w+=$text_info[$char]['width'];
         $dst_h=($dst_h>=$text_info[$char]['height'])?$dst_h:$text_info[$char]['height'];
         $text_info[$char]['x']=0-min($tmp[0],$tmp[2],$tmp[4],$tmp[6]);
         $text_info[$char]['y']=0-min($tmp[1],$tmp[3],$tmp[5],$tmp[7]);
-    }
-    //dd($text_info);
+        $text_info[$char]['angle']=rand(-15,15);
+        }
+   //dd($text_info);
     //exit();
     
     
@@ -120,7 +122,8 @@ if(isset($_POST)){
     $x_pointer=$border+1;
     $y_pointer=$border+1;
     foreach($text_info as $char => $info){
-        imagettftext($dst_img,$_POST['size'],0,$x_pointer,$y_pointer+$info['y'],$colors[rand(0,6)],realpath('./font/arial.ttf'),$char);
+        $y=rand($base_h-5-$dst_h+($info['y']/2),$base_h-5);
+        imagettftext($dst_img,$_POST['size'],$info['angle'],$x_pointer,$y,$colors[rand(0,6)],realpath('./font/arial.ttf'),$char);
         $x_pointer+=$info['width'];
     }
 
