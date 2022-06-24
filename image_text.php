@@ -77,9 +77,6 @@ if(isset($_POST)){
     }
     $color=$_POST['color'];
 
-   
-
-
 
     //評估文字資訊
     $text_info=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$gstr);
@@ -107,15 +104,24 @@ if(isset($_POST)){
     $green=imagecolorallocate($dst_img,0,255,0);
     imagefill($dst_img,0,0,$white);
 
-
     imagettftext($dst_img,$_POST['size'],0,($border+$dst_x),($border+$dst_y),$$color,realpath('./font/arial.ttf'),$gstr);
+
+    $lines=rand(3,6);
+    for($i=0;$i<$lines;$i++){
+        $left_x=rand(5,$border-5);
+        $left_y=rand(5,$base_h-5);
+        $right_x=rand($base_w-$border+5,$base_w-5);
+        $right_y=rand(5,$base_h-5);
+        imageline($dst_img,$left_x,$left_y,$right_x,$right_y,$red);
+    }
+
     imagejpeg($dst_img,"./upload/text.jpg",100);
     imagedestroy($dst_img);
 
 }
 ?>
 <div style="width:500px;margin:auto;">
-    <h2>加入文字後的圖形<?=$_POST['length']."碼";?></h2>
+    <h2>加入文字後的圖形<?=$_POST['length']."碼";?>-<?=$lines."線";?></h2>
     <img src="./upload/text.jpg" alt="" style="border:2px solid black">
 </div>
 
