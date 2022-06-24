@@ -41,10 +41,10 @@ include_once "base.php";
 
 <form id="uploadForm" action="?" method="post" enctype="multipart/form-data">
     <div>
-        選擇檔案:<input type="text" name="string" value="ABC">
+        長度: <input type="number" name="length" value="<?=rand(4,8);?>">
     </div>
     <div>
-        <input type="number" step="1" name="size" value="1">
+        <input type="number" step="1" name="size" value="24">
     </div>   
     <div>
         <select name="color" >
@@ -53,13 +53,31 @@ include_once "base.php";
             <option value="green">綠色</option>
         </select>
     </div>   
-    <input type="submit" value="上傳">
+    <input type="submit" value="產生驗證碼">
 </form>
 
 
 <?php
-if(isset($_POST['string'])){
-    
+if(isset($_POST)){
+    //$gstr=chr(rand(65,90));
+    $gstr="";
+    for($i=0;$i<$_POST['length'];$i++){
+        $type=rand(1,3);
+        switch($type){
+            case 1:
+                //數字
+                $gstr.=rand(0,9);
+            break;
+            case 2:
+                //大寫
+                $gstr.=chr(rand(65,90));
+            break;
+            case 3:
+                //小寫
+                $gstr.=chr(rand(97,122));
+            break;
+        }
+    }
     $color=$_POST['color'];
     $dst_width=300;
     $dst_height=200;
@@ -70,7 +88,15 @@ if(isset($_POST['string'])){
     $red=imagecolorallocate($dst_img,255,0,0);
     $green=imagecolorallocate($dst_img,0,255,0);
     imagefill($dst_img,0,0,$white);
-    imagestring($dst_img,$_POST['size'] ,20,20,$_POST['string'],$$color);
+
+    //評估文字資訊
+    $text_info=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$gstr);
+    
+    $dst_x=0-$text_info[6];
+    $dst_y=0-$text_info[7];
+
+
+    imagettftext($dst_img,$_POST['size'],0,$dst_x,$dst_y,$$color,realpath('./font/arial.ttf'),$gstr);
     imagejpeg($dst_img,"./upload/text.jpg",100);
     imagedestroy($dst_img);
 
@@ -78,7 +104,7 @@ if(isset($_POST['string'])){
 ?>
 <div style="width:500px;margin:auto;">
     <h2>加入文字後的圖形</h2>
-    <img src="./upload/text.jpg" alt="">
+    <img src="./upload/text.jpg" alt="" style="border:2px solid black">
 </div>
 
 </body>
