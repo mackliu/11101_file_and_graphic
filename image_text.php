@@ -65,23 +65,41 @@ if(isset($_POST)){
         $type=rand(1,3);
         switch($type){
             case 1:
-                //數字
-                $gstr.=rand(0,9);
+                $gstr.=rand(0,9);//數字
             break;
             case 2:
-                //大寫
-                $gstr.=chr(rand(65,90));
+                $gstr.=chr(rand(65,90));//大寫
             break;
             case 3:
-                //小寫
-                $gstr.=chr(rand(97,122));
+                $gstr.=chr(rand(97,122));//小寫
             break;
         }
     }
     $color=$_POST['color'];
-    $dst_width=300;
-    $dst_height=200;
-    $dst_img=imagecreatetruecolor($dst_width,$dst_height);
+
+   
+
+
+
+    //評估文字資訊
+    $text_info=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$gstr);
+    //dd($text_info)    ;
+    $dst_x=0-$text_info[6];
+    $dst_y=0-$text_info[7];
+    
+    $arrayW=[$text_info[0],$text_info[2],$text_info[4],$text_info[6]];
+    $arrayH=[$text_info[1],$text_info[3],$text_info[5],$text_info[7]];
+    
+    $dst_w=max($arrayW)-min($arrayW);
+    $dst_h=max($arrayH)-min($arrayH);
+    
+    $border=30;
+
+    $base_w=$dst_w+($border*2);
+    $base_h=$dst_h+($border*2);
+    $dst_img=imagecreatetruecolor($base_w,$base_h);
+
+    //顏色定義區
     $white=imagecolorallocate($dst_img,255,255,255);
     $black=imagecolorallocate($dst_img,0,0,0);
     $blue=imagecolorallocate($dst_img,0,0,255);
@@ -89,21 +107,15 @@ if(isset($_POST)){
     $green=imagecolorallocate($dst_img,0,255,0);
     imagefill($dst_img,0,0,$white);
 
-    //評估文字資訊
-    $text_info=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$gstr);
-    
-    $dst_x=0-$text_info[6];
-    $dst_y=0-$text_info[7];
 
-
-    imagettftext($dst_img,$_POST['size'],0,$dst_x,$dst_y,$$color,realpath('./font/arial.ttf'),$gstr);
+    imagettftext($dst_img,$_POST['size'],0,($border+$dst_x),($border+$dst_y),$$color,realpath('./font/arial.ttf'),$gstr);
     imagejpeg($dst_img,"./upload/text.jpg",100);
     imagedestroy($dst_img);
 
 }
 ?>
 <div style="width:500px;margin:auto;">
-    <h2>加入文字後的圖形</h2>
+    <h2>加入文字後的圖形<?=$_POST['length']."碼";?></h2>
     <img src="./upload/text.jpg" alt="" style="border:2px solid black">
 </div>
 
