@@ -79,19 +79,24 @@ if(isset($_POST)){
 
 
     //評估文字資訊
-    $text_info=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$gstr);
-    //dd($text_info)    ;
-    $dst_x=0-$text_info[6];
-    $dst_y=0-$text_info[7];
+    $text_info=[];
+    $dst_w=0;
+    $dst_h=0;
+    for($i=0;$i<mb_strlen($gstr);$i++){
+        $char=mb_substr($gstr,$i,1);
+        $tmp=imagettfbbox($_POST['size'],0,realpath('./font/arial.ttf'),$char);
+        $text_info[$char]['width']=max($tmp[0],$tmp[2],$tmp[4],$tmp[6])-min($tmp[0],$tmp[2],$tmp[4],$tmp[6]);
+        $text_info[$char]['height']=max($tmp[1],$tmp[3],$tmp[5],$tmp[7])-min($tmp[1],$tmp[3],$tmp[5],$tmp[7]);
+        $dst_w+=$text_info[$char]['width'];
+        $dst_h=($dst_h>=$text_info[$char]['height'])?$dst_h:$text_info[$char]['height'];
+        $text_info[$char]['x']=0-min($tmp[0],$tmp[2],$tmp[4],$tmp[6]);
+        $text_info[$char]['y']=0-min($tmp[1],$tmp[3],$tmp[5],$tmp[7]);
+    }
+    //dd($text_info);
+    //exit();
     
-    $arrayW=[$text_info[0],$text_info[2],$text_info[4],$text_info[6]];
-    $arrayH=[$text_info[1],$text_info[3],$text_info[5],$text_info[7]];
     
-    $dst_w=max($arrayW)-min($arrayW);
-    $dst_h=max($arrayH)-min($arrayH);
-    
-    $border=30;
-
+    $border=10;
     $base_w=$dst_w+($border*2);
     $base_h=$dst_h+($border*2);
     $dst_img=imagecreatetruecolor($base_w,$base_h);
@@ -112,9 +117,15 @@ if(isset($_POST)){
             ];
     imagefill($dst_img,0,0,$white);
 
-    imagettftext($dst_img,$_POST['size'],0,($border+$dst_x),($border+$dst_y),$$color,realpath('./font/arial.ttf'),$gstr);
+    $x_pointer=$border+1;
+    $y_pointer=$border+1;
+    foreach($text_info as $char => $info){
+        imagettftext($dst_img,$_POST['size'],0,$x_pointer,$y_pointer+$info['y'],$colors[rand(0,6)],realpath('./font/arial.ttf'),$char);
+        $x_pointer+=$info['width'];
+    }
 
     $lines=rand(3,6);
+
     for($i=0;$i<$lines;$i++){
         $left_x=rand(5,$border-5);
         $left_y=rand(5,$base_h-5);
