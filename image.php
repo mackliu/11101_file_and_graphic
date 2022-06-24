@@ -54,7 +54,14 @@ include_once "base.php";
         選擇檔案:<input type="file" name="file">
     </div>
     <div>
-        <input type="number" step="any" name="percent">
+        <input type="number" step="any" name="percent" value="0.5">
+    </div>   
+    <div>
+        <select name="color" >
+            <option value="blue">藍色</option>
+            <option value="red">紅色</option>
+            <option value="green">綠色</option>
+        </select>
     </div>   
     <input type="submit" value="上傳">
 </form>
@@ -93,7 +100,51 @@ if(isset($_FILES['file']['tmp_name'])){
 <h2>縮放後的圖形</h2>
 <img src="./upload/result.jpg" alt="">
 <!----圖形加邊框----->
+<?php
+if(isset($_FILES['file']['tmp_name'])){
+    $filename="./upload/{$_FILES['file']['name']}";
+    $percent=0.5;
+    $border=10;
+    $color=$_POST['color'];
+    $src_width=getimagesize($filename)[0];
+    $src_height=getimagesize($filename)[1];
 
+    $dst_width=$src_width*$percent;
+    $dst_height=$src_height*$percent;
+    
+    $dst_img=imagecreatetruecolor($dst_width,$dst_height);
+    $blue=imagecolorallocate($dst_img,0,0,255);
+    $red=imagecolorallocate($dst_img,255,0,0);
+    $green=imagecolorallocate($dst_img,0,255,0);
+    
+    imagefill($dst_img,0,0,$$color);
+    
+/*     switch($color){
+        case 'blue':
+            imagefill($dst_img,0,0,$blue);
+        break;
+        case 'red':
+            imagefill($dst_img,0,0,$red);
+        break;
+        case "green":
+            imagefill($dst_img,0,0,$green);
+        break;
+    } */
+    $src_img=imagecreatefromjpeg($filename);
+
+    $dst_width=$src_width*$percent - ($border*2);
+    $dst_height=$src_height*$percent - ($border*2);
+    
+    imagecopyresampled($dst_img,$src_img,$border,$border,0,0,$dst_width,$dst_height,$src_width,$src_height);
+
+    imagejpeg($dst_img,"./upload/border.jpg",100);
+    imagedestroy($dst_img);
+    imagedestroy($src_img);
+
+}
+?>
+<h2>加邊框後的圖形</h2>
+<img src="./upload/border.jpg" alt="">
 
 <!----產生圖形驗證碼----->
 
