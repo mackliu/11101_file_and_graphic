@@ -31,11 +31,36 @@ include_once "verification_code.php";
 <body>
     <div class="wrapper">
         <h1 class="header">圖形驗證碼練習</h1>
+        <div>
+            <form action="?" method="get">
+                <?php
+                session_start();
+                if(isset($_GET['check'])){
+                    if($_SESSION['check']==$_GET['check']){
+                        echo "驗證正確<br>";
+                        echo "session:".$_SESSION['check']."<br>";
+                        echo "get:".$_GET['check']."<br>";
+                    }else{
+                        echo "驗證錯誤<br>";
+                        echo "session:".$_SESSION['check']."<br>";
+                        echo "get:".$_GET['check']."<br>";
+                    }
+                }
+
+
+                $_SESSION['check']=code(5);
+                ?>
+                請輸入驗證碼: <input type="text" name="check" >
+                
+                <input type="submit" value="檢查">
+                <div><?=$_SESSION['check'];?></div>
+            </form>
+        </div>
 
         <!--使用按鈕每次點擊時重整頁面來重新產生圖形驗證碼-->
-        <button onclick="location.reload()" class='btn'>產生驗證碼</button>
+        <!-- <button onclick="location.reload()" class='btn'>產生驗證碼</button> -->
         <div class="captcha">
-            <img src="<?=captcha(code());?>">
+            <img src="<?=captcha($_SESSION['check']);?>">
         </div>
     </div>
 

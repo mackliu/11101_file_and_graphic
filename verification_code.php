@@ -161,7 +161,7 @@ function captcha($str){
         imageline($dst_img,$left_x,$left_y,$right_x,$right_y,$colors[rand(0,count($colors)-1)]);
     }
 
-    //輸出圖片為jpg檔
+
     
     //開啟輸出緩衝區(output buffer)
     ob_start();
